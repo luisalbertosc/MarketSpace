@@ -9,23 +9,17 @@ import {
 type Props = IButtonProps & {
   title: string
   icon?: ReactNode
-  variant?: 'default' | 'secondary'
 }
 
-export const Button = ({
-  title,
-  variant = 'default',
-  icon,
-  ...rest
-}: Props) => {
+export const ButtonCreate = ({ title, icon, ...rest }: Props) => {
   return (
     <ButtonNativeBase
       w="full"
       h={14}
-      bg={variant === 'secondary' ? 'gray.500' : 'blue.light'}
-      rounded="sm"
+      bg="gray.200"
+      rounded="md"
       _pressed={{
-        bg: variant === 'secondary' ? 'gray.400' : 'blue.default',
+        bg: 'gray.300',
       }}
       {...rest}
     >
@@ -33,7 +27,7 @@ export const Button = ({
         {icon}
         <Text
           ml={icon ? 2 : 0}
-          color={variant === 'secondary' ? 'gray.200' : 'white'}
+          color="gray.700"
           fontFamily="heading"
           fontSize="sm"
         >

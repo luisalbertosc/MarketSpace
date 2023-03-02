@@ -1,4 +1,4 @@
 export type PaymentMethodDTO = {
-  key: string;
-  name: string;
-};
+  key: string
+  name: string
+}

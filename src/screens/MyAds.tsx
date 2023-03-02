@@ -1,8 +1,7 @@
-import { useState, useCallback } from "react";
-import { StatusBar } from "react-native";
+import { useState, useCallback } from 'react'
+import { StatusBar } from 'react-native'
 
 import {
-  ScrollView,
   Text,
   VStack,
   HStack,
@@ -13,75 +12,75 @@ import {
   useToast,
   Center,
   FlatList,
-} from "native-base";
+} from 'native-base'
 
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import { AppNavigatorRoutesProps } from "@routes/app.routes";
+import { useNavigation, useFocusEffect } from '@react-navigation/native'
+import { AppNavigatorRoutesProps } from '@routes/app.routes'
 
-import { AdCard } from "@components/AdCard";
-import { Loading } from "@components/Loading";
+import { AdCard } from '@components/AdCard'
+import { Loading } from '@components/Loading'
 
-import { Plus } from "phosphor-react-native";
+import { Plus } from 'phosphor-react-native'
 
-import { ProductDTO } from "@dtos/ProductDTO";
+import { ProductDTO } from '@dtos/ProductDTO'
 
-import { AppError } from "@utils/AppError";
-import { api } from "@services/api";
+import { AppError } from '@utils/AppError'
+import { api } from '@services/api'
 
 export const MyAds = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [products, setProducts] = useState<ProductDTO[]>([]);
+  const [isLoading, setIsLoading] = useState(true)
+  const [products, setProducts] = useState<ProductDTO[]>([])
 
-  const [adType, setAdType] = useState("all");
+  const [adType, setAdType] = useState('all')
 
-  const navigation = useNavigation<AppNavigatorRoutesProps>();
+  const navigation = useNavigation<AppNavigatorRoutesProps>()
 
-  const toast = useToast();
+  const toast = useToast()
 
-  const { colors } = useTheme();
+  const { colors } = useTheme()
 
-  const filter = adType === "active" ? true : false;
+  const filter = adType === 'active'
 
   const productsFiltered = products.filter((product) => {
-    if (adType === "all") {
-      return true;
+    if (adType === 'all') {
+      return true
     }
 
-    return product.is_active === filter;
-  });
+    return product.is_active === filter
+  })
 
   const handleGoCreateAd = () => {
-    navigation.navigate("createad");
-  };
+    navigation.navigate('createad')
+  }
 
   useFocusEffect(
     useCallback(() => {
       const loadData = async () => {
         try {
-          const productsData = await api.get(`/users/products`);
+          const productsData = await api.get(`/users/products`)
 
-          setProducts(productsData.data);
+          setProducts(productsData.data)
         } catch (error) {
-          const isAppError = error instanceof AppError;
+          const isAppError = error instanceof AppError
           const title = isAppError
             ? error.message
-            : "Não foi possível receber seus anúncios. Tente Novamente!";
+            : 'Não foi possível receber seus anúncios. Tente Novamente!'
 
           if (isAppError) {
             toast.show({
               title,
-              placement: "top",
-              bgColor: "red.500",
-            });
+              placement: 'top',
+              bgColor: 'red.500',
+            })
           }
         } finally {
-          setIsLoading(false);
+          setIsLoading(false)
         }
-      };
+      }
 
-      loadData();
-    }, [])
-  );
+      loadData()
+    }, []),
+  )
 
   return (
     <>
@@ -131,7 +130,7 @@ export const MyAds = () => {
                 color="gray.300"
                 onValueChange={(itemValue) => setAdType(itemValue)}
                 _selectedItem={{
-                  borderColor: "blue.light",
+                  borderColor: 'blue.light',
                   borderWidth: 1,
                   borderRadius: 8,
                 }}
@@ -146,7 +145,7 @@ export const MyAds = () => {
           <FlatList
             flex={1}
             px={5}
-            columnWrapperStyle={{ justifyContent: "space-between" }}
+            columnWrapperStyle={{ justifyContent: 'space-between' }}
             numColumns={2}
             data={productsFiltered}
             keyExtractor={(item) => item.id}
@@ -163,18 +162,18 @@ export const MyAds = () => {
             )}
             ListEmptyComponent={() => (
               <Center flex={1}>
-                {adType === "all" && (
+                {adType === 'all' && (
                   <Text color="gray.300" textAlign="center">
-                    Você ainda não criou nenhum anúncio. {"\n"}
+                    Você ainda não criou nenhum anúncio. {'\n'}
                     Clique em + para criar seu primeiro!
                   </Text>
                 )}
-                {adType === "active" && (
+                {adType === 'active' && (
                   <Text color="gray.300" textAlign="center">
                     Você não tem nenhum produto ativo!
                   </Text>
                 )}
-                {adType === "inactive" && (
+                {adType === 'inactive' && (
                   <Text color="gray.300" textAlign="center">
                     Você não tem nenhum produto inativo!
                   </Text>
@@ -185,5 +184,5 @@ export const MyAds = () => {
         </>
       )}
     </>
-  );
-};
+  )
+}

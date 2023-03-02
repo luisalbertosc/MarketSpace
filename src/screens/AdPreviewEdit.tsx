@@ -34,9 +34,10 @@ type RouteParams = {
   paymentMethods: string[]
   isNew: boolean
   acceptTrade: boolean
+  id: string
 }
 
-export const AdPreview = () => {
+export const AdPreviewEdit = () => {
   const [isLoading, setIsLoading] = useState(false)
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
@@ -55,6 +56,7 @@ export const AdPreview = () => {
     paymentMethods,
     isNew,
     acceptTrade,
+    id,
   } = route.params as RouteParams
 
   const handleGoBack = () => {
@@ -65,7 +67,9 @@ export const AdPreview = () => {
     setIsLoading(true)
 
     try {
-      const product = await api.post('/products', {
+      const product = await api.get(`products/${id}`)
+
+      await api.put(`/products/${id}`, {
         name: title,
         description,
         price: parseInt(price.replace(/[^0-9]/g, '')),
@@ -74,28 +78,29 @@ export const AdPreview = () => {
         accept_trade: acceptTrade,
       })
 
-      const imageData = new FormData()
+      images.forEach(async (item) => {
+        // eslint-disable-next-line no-empty
+        if (item.path) {
+        } else if (item.uri) {
+          const imageData = new FormData()
 
-      images.forEach((item) => {
-        const imageFile = {
-          ...item,
-          name: user.name + '.' + item.name,
-        } as any
+          const imageFile = {
+            ...item,
+            name: user.name + '.' + item.name,
+          } as any
 
-        imageData.append('images', imageFile)
+          imageData.append('images', imageFile)
+
+          imageData.append('product_id', product.data.id)
+
+          await api.post('/products/images', imageData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+        }
       })
-
-      imageData.append('product_id', product.data.id)
-
-      await api.post('/products/images', imageData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-
-      navigation.navigate('myad', {
-        id: product.data.id,
-      })
+      navigation.navigate('myad', { id })
     } catch (error) {
       const isAppError = error instanceof AppError
       const title = isAppError

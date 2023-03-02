@@ -1,20 +1,13 @@
-import { Text, HStack, useTheme } from "native-base";
+import { Text, HStack, useTheme } from 'native-base'
 
-import {
-  Barcode,
-  QrCode,
-  Bank,
-  Money,
-  CreditCard,
-} from "phosphor-react-native";
+import { Barcode, QrCode, Bank, Money, CreditCard } from 'phosphor-react-native'
 
-export const GeneratePaymentMethods = (
-  paymentMethods: string[],
-  color: string
-) => {
+export const GeneratePaymentMethods = (paymentMethods: string[]) => {
+  const { colors } = useTheme()
+  const color = colors.gray[100]
   return (
     <>
-      {paymentMethods.includes("boleto") && (
+      {paymentMethods.includes('boleto') && (
         <HStack alignItems="center">
           <Barcode size={20} color={color} />
           <Text ml={2} color="gray.300">
@@ -22,7 +15,7 @@ export const GeneratePaymentMethods = (
           </Text>
         </HStack>
       )}
-      {paymentMethods.includes("pix") && (
+      {paymentMethods.includes('pix') && (
         <HStack alignItems="center">
           <QrCode size={20} color={color} />
           <Text ml={2} color="gray.300">
@@ -30,7 +23,7 @@ export const GeneratePaymentMethods = (
           </Text>
         </HStack>
       )}
-      {paymentMethods.includes("deposit") && (
+      {paymentMethods.includes('deposit') && (
         <HStack alignItems="center">
           <Bank size={20} color={color} />
           <Text ml={2} color="gray.300">
@@ -38,7 +31,7 @@ export const GeneratePaymentMethods = (
           </Text>
         </HStack>
       )}
-      {paymentMethods.includes("cash") && (
+      {paymentMethods.includes('cash') && (
         <HStack alignItems="center">
           <Money size={20} color={color} />
           <Text ml={2} color="gray.300">
@@ -46,7 +39,7 @@ export const GeneratePaymentMethods = (
           </Text>
         </HStack>
       )}
-      {paymentMethods.includes("card") && (
+      {paymentMethods.includes('card') && (
         <HStack alignItems="center">
           <CreditCard size={20} color={color} />
           <Text ml={2} color="gray.300">
@@ -55,5 +48,5 @@ export const GeneratePaymentMethods = (
         </HStack>
       )}
     </>
-  );
-};
+  )
+}

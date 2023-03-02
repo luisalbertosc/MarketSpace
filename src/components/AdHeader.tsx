@@ -4,17 +4,17 @@ import {
   Heading,
   Button as NativeButton,
   useTheme,
-} from "native-base";
+} from 'native-base'
 
-import { ArrowLeft } from "phosphor-react-native";
+import { ArrowLeft } from 'phosphor-react-native'
 
 type Props = IStackProps & {
-  title: string;
-  goBack: () => void;
-};
+  title: string
+  goBack: () => void
+}
 
 export const AdHeader = ({ title, goBack, ...rest }: Props) => {
-  const { colors } = useTheme();
+  const { colors } = useTheme()
 
   return (
     <HStack {...rest} w="full" justifyContent="center" alignItems="center">
@@ -27,7 +27,9 @@ export const AdHeader = ({ title, goBack, ...rest }: Props) => {
       >
         <ArrowLeft color={colors.gray[200]} />
       </NativeButton>
-      <Heading color={colors.gray[200]}>{title}</Heading>
+      <Heading color={colors.gray[200]} fontFamily="heading">
+        {title}
+      </Heading>
     </HStack>
-  );
-};
+  )
+}

@@ -1,19 +1,19 @@
-import { VStack, IStackProps, Image, Text, Heading, Box } from "native-base";
-import { TouchableOpacity } from "react-native";
+import { VStack, IStackProps, Image, Text, Heading, Box } from 'native-base'
+import { TouchableOpacity } from 'react-native'
 
-import { useNavigation } from "@react-navigation/native";
-import { AppNavigatorRoutesProps } from "@routes/app.routes";
+import { useNavigation } from '@react-navigation/native'
+import { AppNavigatorRoutesProps } from '@routes/app.routes'
 
 type Props = IStackProps & {
-  title: string;
-  price: string;
-  used: boolean;
-  active: boolean;
-  image: string;
-  id: string;
-  showProfile?: boolean;
-  profileImage?: string;
-};
+  title: string
+  price: string
+  used: boolean
+  active: boolean
+  image: string
+  id: string
+  showProfile?: boolean
+  profileImage?: string
+}
 
 export const AdCard = ({
   title,
@@ -26,51 +26,63 @@ export const AdCard = ({
   id,
   ...rest
 }: Props) => {
-  const navigation = useNavigation<AppNavigatorRoutesProps>();
+  const navigation = useNavigation<AppNavigatorRoutesProps>()
 
   const handleGoMyAd = () => {
     if (showProfile) {
-      navigation.navigate("ad", { id });
+      navigation.navigate('ad', { id })
     } else {
-      navigation.navigate("myad", { id });
+      navigation.navigate('myad', { id })
     }
-  };
+  }
 
   return (
     <TouchableOpacity onPress={handleGoMyAd}>
-      <VStack position="relative" {...rest}>
-        {active && (
+      <VStack position="relative" {...rest} mt={2}>
+        <Box
+          bg={!used ? 'blue.default' : 'gray.200'}
+          position="absolute"
+          zIndex={100}
+          borderRadius={10}
+          py={1}
+          px={2}
+          right={1}
+          top={1}
+          opacity={active ? 100 : 50}
+        >
           <Heading
             textTransform="uppercase"
             color="white"
             fontSize={10}
-            bg={!used ? "blue.light" : "gray.200"}
-            position="absolute"
-            zIndex={100}
-            borderRadius={10}
-            py={1}
-            px={2}
-            right={1}
-            top={1}
+            fontFamily="heading"
           >
-            {used ? "Usado" : "Novo"}
+            {used ? 'Usado' : 'Novo'}
           </Heading>
-        )}
+        </Box>
 
         <Box position="relative" alignItems="center" justifyContent="center">
           {!active && (
-            <Heading
-              textTransform="uppercase"
-              color="white"
-              fontSize={10}
+            <Box
               position="absolute"
               zIndex={100}
-              bg="gray.300"
-              p={1}
-              borderRadius={10}
+              w={160}
+              bg="#1A181B99"
+              height={100}
+              borderRadius={6}
+              justifyContent="flex-end"
+              alignItems="flex-start"
             >
-              Anúncio Desativado
-            </Heading>
+              <Heading
+                textTransform="uppercase"
+                color="white"
+                fontSize="xs"
+                textAlign="center"
+                fontFamily="heading"
+                m={2}
+              >
+                Anúncio Desativado
+              </Heading>
+            </Box>
           )}
 
           {showProfile && (
@@ -86,8 +98,8 @@ export const AdCard = ({
               zIndex={100}
               left={1}
               top={1}
-              borderWidth={1}
-              borderColor="gray.300"
+              borderWidth={2}
+              borderColor="white"
             />
           )}
           <Image
@@ -100,18 +112,26 @@ export const AdCard = ({
             resizeMode="cover"
             borderRadius={10}
             blurRadius={active ? 0 : 10}
-            borderWidth={1}
-            borderColor="gray.500"
           />
         </Box>
 
-        <Text color={active ? "gray.200" : "gray.400"} fontSize={14} mt={1}>
+        <Text
+          color={active ? 'gray.200' : 'gray.400'}
+          fontSize={14}
+          mt={1}
+          numberOfLines={1}
+        >
           {title}
         </Text>
-        <Heading color={active ? "gray.200" : "gray.400"} fontSize={14}>
+
+        <Heading
+          color={active ? 'gray.200' : 'gray.400'}
+          fontSize={14}
+          fontFamily="heading"
+        >
           R$ {price}
         </Heading>
       </VStack>
     </TouchableOpacity>
-  );
-};
+  )
+}

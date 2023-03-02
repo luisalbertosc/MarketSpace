@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+/* eslint-disable camelcase */
+import { useState, useEffect } from 'react'
 import {
   ScrollView,
   Text,
@@ -10,81 +11,73 @@ import {
   useTheme,
   useToast,
   Box,
-} from "native-base";
+} from 'native-base'
 
-import { Dimensions } from "react-native";
+import { Dimensions } from 'react-native'
 
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { AppNavigatorRoutesProps } from "@routes/app.routes";
+import { useNavigation, useRoute } from '@react-navigation/native'
+import { AppNavigatorRoutesProps } from '@routes/app.routes'
 
-import Carousel from "react-native-reanimated-carousel";
+import Carousel from 'react-native-reanimated-carousel'
 
-import { Button } from "@components/Button";
+import { Button } from '@components/Button'
 
-import { AppError } from "@utils/AppError";
-import { api } from "@services/api";
+import { AppError } from '@utils/AppError'
+import { api } from '@services/api'
 
-import {
-  ArrowLeft,
-  Barcode,
-  QrCode,
-  Bank,
-  Money,
-  CreditCard,
-  WhatsappLogo,
-} from "phosphor-react-native";
+import { ArrowLeft, WhatsappLogo } from 'phosphor-react-native'
 
-import { ProductDTO } from "../dtos/ProductDTO";
-import { Loading } from "@components/Loading";
-import { GeneratePaymentMethods } from "@utils/generatePaymentMethods";
+import { ProductDTO } from '../dtos/ProductDTO'
+import { Loading } from '@components/Loading'
+import { GeneratePaymentMethods } from '@utils/generatePaymentMethods'
 
 type RouteParams = {
-  id: string;
-};
+  id: string
+}
 
 export const Ad = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [product, setProduct] = useState({} as ProductDTO);
+  const [isLoading, setIsLoading] = useState(true)
+  const [product, setProduct] = useState({} as ProductDTO)
 
-  const width = Dimensions.get("window").width;
+  const width = Dimensions.get('window').width
 
-  const { colors } = useTheme();
+  const { colors } = useTheme()
 
-  const route = useRoute();
-  const toast = useToast();
+  const route = useRoute()
+  const toast = useToast()
 
-  const { id } = route.params as RouteParams;
+  const { id } = route.params as RouteParams
 
-  const navigation = useNavigation<AppNavigatorRoutesProps>();
+  const navigation = useNavigation<AppNavigatorRoutesProps>()
 
   const handleGoBack = () => {
-    navigation.navigate("app", { screen: "home" });
-  };
+    navigation.navigate('app', { screen: 'home' })
+  }
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const productData = await api.get(`products/${id}`);
-        setProduct(productData.data);
-        setIsLoading(false);
+        const productData = await api.get(`products/${id}`)
+        setProduct(productData.data)
+        setIsLoading(false)
       } catch (error) {
-        const isAppError = error instanceof AppError;
+        const isAppError = error instanceof AppError
         const title = isAppError
           ? error.message
-          : "Não foi possível receber os dados do anúncio. Tente Novamente!";
+          : 'Não foi possível receber os dados do anúncio. Tente Novamente!'
 
         if (isAppError) {
           toast.show({
             title,
-            placement: "top",
-            bgColor: "red.500",
-          });
+            placement: 'top',
+            bgColor: 'red.500',
+          })
         }
       }
-    };
+    }
 
-    loadData();
-  }, []);
+    loadData()
+  }, [])
 
   return (
     <>
@@ -142,23 +135,52 @@ export const Ad = () => {
                       }}
                       alt="Ad Image"
                       resizeMode="cover"
-                      borderColor="gray.300"
-                      borderWidth={1}
                     />
                   )}
                 />
               </Box>
 
               <VStack px={5}>
-                <Heading
-                  my={2}
-                  textTransform="uppercase"
-                  color="blue.default"
-                  fontSize={14}
-                  mt={4}
+                <HStack mb={6} mt={4} alignItems="center">
+                  <Image
+                    h={8}
+                    w={8}
+                    source={{
+                      uri: `${api.defaults.baseURL}/images/${product.user?.avatar}`,
+                    }}
+                    alt="user image"
+                    borderRadius="full"
+                    borderWidth={2}
+                    borderColor="blue.light"
+                  />
+                  <Heading
+                    color="gray.100"
+                    fontSize={16}
+                    ml={2}
+                    textTransform="capitalize"
+                  >
+                    {product.user?.name}
+                  </Heading>
+                </HStack>
+                <Box
+                  w={50}
+                  h={5}
+                  mb={2}
+                  bg="gray.500"
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius={9999}
                 >
-                  {product.is_new ? "NOVO" : "USADO"}
-                </Heading>
+                  <Heading
+                    textTransform="uppercase"
+                    color="gray.100"
+                    fontSize={12}
+                    fontFamily="heading"
+                  >
+                    {product.is_new ? 'NOVO' : 'USADO'}
+                  </Heading>
+                </Box>
+
                 <HStack
                   w="full"
                   justifyContent="space-between"
@@ -168,13 +190,13 @@ export const Ad = () => {
                     {product.name}
                   </Heading>
                   <Text color="blue.light" fontFamily="heading">
-                    R${" "}
+                    R${' '}
                     <Heading
                       color="blue.light"
                       fontFamily="heading"
                       fontSize={20}
                     >
-                      45,00
+                      {product.price}
                     </Heading>
                   </Text>
                 </HStack>
@@ -183,22 +205,31 @@ export const Ad = () => {
                   {product.description}
                 </Text>
 
-                <Heading color="gray.300" fontSize={14} my={5}>
-                  Aceita troca?{" "}
-                  <Text fontWeight="normal">
-                    {product.accept_trade ? "Sim" : "Não"}
+                <Heading
+                  color="gray.300"
+                  fontSize={14}
+                  my={5}
+                  fontFamily="heading"
+                >
+                  Aceita troca?{' '}
+                  <Text fontWeight="normal" fontFamily="body">
+                    {product.accept_trade ? 'Sim' : 'Não'}
                   </Text>
                 </Heading>
 
-                <Heading color="gray.300" fontSize={14} mb={2}>
+                <Heading
+                  color="gray.300"
+                  fontSize={14}
+                  mb={2}
+                  fontFamily="heading"
+                >
                   Meios de Pagamento:
                 </Heading>
 
                 {GeneratePaymentMethods(
                   product.payment_methods.map(
-                    (payment_method) => payment_method.key
+                    (payment_method) => payment_method.key,
                   ),
-                  colors.gray[300]
                 )}
               </VStack>
             </VStack>
@@ -211,7 +242,7 @@ export const Ad = () => {
             justifyContent="space-between"
           >
             <Text color="blue.light" fontFamily="heading">
-              R${" "}
+              R${' '}
               <Heading color="blue.light" fontFamily="heading" fontSize={24}>
                 {product.price}
               </Heading>
@@ -228,5 +259,5 @@ export const Ad = () => {
         </>
       )}
     </>
-  );
-};
+  )
+}

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { StatusBar, LogBox } from "react-native";
+import { useState } from 'react'
+import { StatusBar, LogBox } from 'react-native'
 
 import {
   ScrollView,
@@ -14,50 +14,52 @@ import {
   Checkbox,
   Switch,
   useToast,
-} from "native-base";
+  Box,
+} from 'native-base'
 
-import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system";
+import * as ImagePicker from 'expo-image-picker'
+import * as FileSystem from 'expo-file-system'
 
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm } from 'react-hook-form'
 
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
 
-import { useNavigation } from "@react-navigation/native";
-import { AppNavigatorRoutesProps } from "@routes/app.routes";
+import { useNavigation } from '@react-navigation/native'
+import { AppNavigatorRoutesProps } from '@routes/app.routes'
 
-import { Input } from "@components/Input";
-import { Button } from "@components/Button";
-import { AdHeader } from "@components/AdHeader";
+import { Input } from '@components/Input'
+import { Button } from '@components/Button'
+import { AdHeader } from '@components/AdHeader'
 
-import { Plus } from "phosphor-react-native";
-import { AppError } from "@utils/AppError";
+import { Plus, X } from 'phosphor-react-native'
+import { AppError } from '@utils/AppError'
+import { ButtonCreate } from '@components/ButtonCreate'
 
 const createAdSchema = yup.object({
   title: yup
     .string()
-    .required("Informe um título.")
-    .min(6, "O título deve ter no mínimo 6 letras."),
+    .required('Informe um título.')
+    .min(6, 'O título deve ter no mínimo 6 letras.'),
   description: yup
     .string()
-    .required("Informe uma descrição.")
-    .min(20, "A descrição deve ser detalhada!"),
-  price: yup.string().required("Informe um preço."),
-});
+    .required('Informe uma descrição.')
+    .min(20, 'A descrição deve ser detalhada!'),
+  price: yup.string().required('Informe um preço.'),
+})
 
 type FormDataProps = {
-  title: string;
-  description: string;
-  price: string;
-};
+  title: string
+  description: string
+  price: string
+}
 
 export const CreateAd = () => {
-  const [isNew, setIsNew] = useState<boolean>(true);
-  const [paymentMethods, setPaymentMethods] = useState<string[]>([]);
-  const [acceptTrade, setAcceptTrade] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [images, setImages] = useState<any[]>([]);
+  const [isNew, setIsNew] = useState<boolean>(true)
+  const [paymentMethods, setPaymentMethods] = useState<string[]>([])
+  const [acceptTrade, setAcceptTrade] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [images, setImages] = useState<any[]>([])
 
   const {
     control,
@@ -65,41 +67,41 @@ export const CreateAd = () => {
     formState: { errors },
   } = useForm<FormDataProps>({
     defaultValues: {
-      title: "",
-      description: "",
-      price: "",
+      title: '',
+      description: '',
+      price: '',
     },
     resolver: yupResolver(createAdSchema),
-  });
+  })
 
-  const { colors } = useTheme();
+  const { colors } = useTheme()
 
-  const toast = useToast();
+  const toast = useToast()
 
-  const navigation = useNavigation<AppNavigatorRoutesProps>();
+  const navigation = useNavigation<AppNavigatorRoutesProps>()
 
   const handleGoBack = () => {
-    navigation.goBack();
-  };
+    navigation.goBack()
+  }
 
   const handleGoPreview = ({ title, description, price }: FormDataProps) => {
     if (images.length === 0) {
       return toast.show({
-        title: "Selecione ao menos uma imagem!",
-        placement: "top",
-        bgColor: "red.500",
-      });
+        title: 'Selecione ao menos uma imagem!',
+        placement: 'top',
+        bgColor: 'red.500',
+      })
     }
 
     if (paymentMethods.length === 0) {
       return toast.show({
-        title: "Selecione ao menos um meio de pagamento!",
-        placement: "top",
-        bgColor: "red.500",
-      });
+        title: 'Selecione ao menos um meio de pagamento!',
+        placement: 'top',
+        bgColor: 'red.500',
+      })
     }
 
-    navigation.navigate("adpreview", {
+    navigation.navigate('adpreview', {
       title,
       description,
       price,
@@ -107,8 +109,8 @@ export const CreateAd = () => {
       paymentMethods,
       isNew,
       acceptTrade,
-    });
-  };
+    })
+  }
 
   const handleAdPhotoSelect = async () => {
     try {
@@ -117,64 +119,69 @@ export const CreateAd = () => {
         quality: 1,
         aspect: [4, 4],
         allowsEditing: true,
-      });
+      })
 
       if (photoSelected.canceled) {
-        return;
+        return
       }
 
       if (images.length > 2) {
-        throw new AppError("Só pode selecionar 3 fotos!");
+        throw new AppError('Só pode selecionar 3 fotos!')
       }
 
       if (photoSelected.assets[0].uri) {
         const photoInfo = await FileSystem.getInfoAsync(
-          photoSelected.assets[0].uri
-        );
+          photoSelected.assets[0].uri,
+        )
 
         if (photoInfo.size && photoInfo.size / 1024 / 1024 > 5) {
           return toast.show({
-            title: "Essa imagem é muito grande. Escolha uma de até 5MB.",
-            placement: "top",
-            bgColor: "red.500",
-          });
+            title: 'Essa imagem é muito grande. Escolha uma de até 5MB.',
+            placement: 'top',
+            bgColor: 'red.500',
+          })
         }
 
-        const fileExtension = photoSelected.assets[0].uri.split(".").pop();
+        const fileExtension = photoSelected.assets[0].uri.split('.').pop()
 
         const photoFile = {
           name: `${fileExtension}`.toLowerCase(),
           uri: photoSelected.assets[0].uri,
           type: `${photoSelected.assets[0].type}/${fileExtension}`,
-        } as any;
+        } as any
 
         setImages((images) => {
-          return [...images, photoFile];
-        });
+          return [...images, photoFile]
+        })
 
         toast.show({
-          title: "Foto selecionada!",
-          placement: "top",
-          bgColor: "green.500",
-        });
+          title: 'Foto selecionada!',
+          placement: 'top',
+          bgColor: 'green.500',
+        })
       }
     } catch (error) {
-      const isAppError = error instanceof AppError;
+      const isAppError = error instanceof AppError
       const title = isAppError
         ? error.message
-        : "Não foi possível selecionar a imagem. Tente novamente!";
+        : 'Não foi possível selecionar a imagem. Tente novamente!'
 
       if (isAppError) {
         toast.show({
           title,
-          placement: "top",
-          bgColor: "red.500",
-        });
+          placement: 'top',
+          bgColor: 'red.500',
+        })
       }
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
+
+  const handleDeleteImage = (uri: any) => {
+    const newArray = images.filter((item) => item.uri !== uri)
+    setImages(newArray)
+  }
 
   return (
     <>
@@ -186,7 +193,7 @@ export const CreateAd = () => {
         <AdHeader title="Criar Anúncio" mt={12} goBack={handleGoBack} />
 
         <VStack p={5} flex={1} alignItems="flex-start">
-          <Heading color="gray.200" fontSize={18}>
+          <Heading color="gray.200" fontSize={18} fontFamily="heading">
             Imagens
           </Heading>
           <Text color="gray.300" fontSize={14}>
@@ -194,33 +201,51 @@ export const CreateAd = () => {
             incrível!
           </Text>
 
-          <HStack my={5}>
+          <HStack my={5} ml={-4}>
             {images.length > 0 &&
-              images.map((imageData) => (
-                <Image
-                  w={88}
-                  h={88}
-                  mr={2}
-                  source={{
-                    uri: imageData.uri,
-                  }}
-                  alt="Imagem do novo anúncio"
-                  resizeMode="cover"
-                  borderRadius={8}
-                  key={imageData.uri}
-                />
+              images.map((imageData, index) => (
+                <Box key={index} ml={2}>
+                  <NativeButton
+                    position="absolute"
+                    zIndex={100}
+                    borderRadius={9999}
+                    left={85}
+                    top={1}
+                    w={5}
+                    h={6}
+                    bg="gray.200"
+                    _pressed={{
+                      bg: 'gray.500',
+                    }}
+                    onPress={() => handleDeleteImage(imageData.uri)}
+                  >
+                    <Box justifyContent="center" alignItems="center">
+                      <X size={12} weight="fill" color="white" />
+                    </Box>
+                  </NativeButton>
+                  <Image
+                    w={110}
+                    h={110}
+                    source={{
+                      uri: imageData.uri,
+                    }}
+                    alt="Imagem do novo anúncio"
+                    resizeMode="cover"
+                    borderRadius={8}
+                  />
+                </Box>
               ))}
 
             {images.length < 3 && (
               <NativeButton
                 bg="gray.500"
-                w={88}
-                h={88}
+                w={110}
+                h={110}
                 ml={2}
                 _pressed={{
                   borderWidth: 1,
-                  bg: "gray.500",
-                  borderColor: "gray.400",
+                  bg: 'gray.500',
+                  borderColor: 'gray.600',
                 }}
                 onPress={handleAdPhotoSelect}
               >
@@ -229,17 +254,17 @@ export const CreateAd = () => {
             )}
           </HStack>
 
-          <Heading color="gray.200" fontSize={18} my={2}>
+          <Heading color="gray.200" fontSize={18} my={2} fontFamily="heading">
             Sobre o produto
           </Heading>
 
           <Controller
             control={control}
             name="title"
-            rules={{ required: "Informe o título" }}
+            rules={{ required: 'Informe o título' }}
             render={({ field: { onChange, value } }) => (
               <Input
-                placeholder="Título"
+                placeholder="Título do anúncio"
                 onChangeText={onChange}
                 value={value}
                 errorMessage={errors.title?.message}
@@ -250,10 +275,10 @@ export const CreateAd = () => {
           <Controller
             control={control}
             name="description"
-            rules={{ required: "Informe a descrição" }}
+            rules={{ required: 'Informe a descrição' }}
             render={({ field: { onChange, value } }) => (
               <Input
-                placeholder="Descrição"
+                placeholder="Descrição do produto"
                 multiline={true}
                 numberOfLines={5}
                 textAlignVertical="top"
@@ -266,9 +291,9 @@ export const CreateAd = () => {
 
           <Radio.Group
             name="productCondition"
-            value={isNew ? "new" : "used"}
+            value={isNew ? 'new' : 'used'}
             onChange={(nextValue) => {
-              setIsNew(nextValue === "new" ? true : false);
+              setIsNew(nextValue === 'new')
             }}
           >
             <HStack>
@@ -285,17 +310,23 @@ export const CreateAd = () => {
             </HStack>
           </Radio.Group>
 
-          <Heading color="gray.200" fontSize={16} mb={2} mt={5}>
+          <Heading
+            color="gray.200"
+            fontSize={16}
+            mb={2}
+            mt={5}
+            fontFamily="heading"
+          >
             Venda
           </Heading>
 
           <Controller
             control={control}
             name="price"
-            rules={{ required: "Informe o preço!" }}
+            rules={{ required: 'Informe o preço!' }}
             render={({ field: { onChange, value } }) => (
               <Input
-                placeholder="0,00"
+                placeholder="Valor do produto"
                 h="14"
                 mb={0}
                 onChangeText={onChange}
@@ -305,18 +336,18 @@ export const CreateAd = () => {
             )}
           />
 
-          <Heading color="gray.200" fontSize={16} my={2}>
+          <Heading color="gray.200" fontSize={16} my={2} fontFamily="heading">
             Aceita troca?
           </Heading>
 
           <Switch
             onToggle={(value) => setAcceptTrade(value)}
             value={acceptTrade}
-            size="lg"
-            m={0}
+            size="md"
+            m={1}
           />
 
-          <Heading color="gray.200" fontSize={16} my={2}>
+          <Heading color="gray.200" fontSize={16} my={2} fontFamily="heading">
             Meios de pagamento
           </Heading>
 
@@ -324,23 +355,24 @@ export const CreateAd = () => {
             onChange={(value) => setPaymentMethods(value)}
             value={paymentMethods}
             accessibilityLabel="Escolha o método de pagamento."
+            m={1}
           >
-            <Checkbox value="boleto">
+            <Checkbox value="boleto" mb={1}>
               <Text color="gray.300" fontSize={16}>
                 Boleto
               </Text>
             </Checkbox>
-            <Checkbox value="pix">
+            <Checkbox value="pix" mb={1}>
               <Text color="gray.300" fontSize={16}>
                 Pix
               </Text>
             </Checkbox>
-            <Checkbox value="cash">
+            <Checkbox value="cash" mb={1}>
               <Text color="gray.300" fontSize={16}>
                 Dinheiro
               </Text>
             </Checkbox>
-            <Checkbox value="card">
+            <Checkbox value="card" mb={1}>
               <Text color="gray.300" fontSize={16}>
                 Cartão de Crédito
               </Text>
@@ -353,38 +385,41 @@ export const CreateAd = () => {
           </Checkbox.Group>
         </VStack>
       </ScrollView>
-      <HStack
-        w="full"
-        py={2}
-        px={5}
-        bg="white"
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <Button
-          variant="secondary"
-          title="Cancelar"
+      <Box h={100} bg="white">
+        <HStack
+          py={2}
+          px={5}
           alignItems="center"
-          justifyContent="center"
-          w="47%"
-          h={12}
-          onPress={handleGoBack}
-        />
-        <Button
-          title="Avançar"
-          alignItems="center"
-          justifyContent="center"
-          w="47%"
-          h={12}
-          isLoading={isLoading}
-          onPress={handleSubmit(handleGoPreview)}
-        />
-      </HStack>
+          justifyContent="space-between"
+        >
+          <Button
+            variant="secondary"
+            title="Cancelar"
+            alignItems="center"
+            justifyContent="center"
+            w="47%"
+            h={12}
+            mt={2}
+            onPress={handleGoBack}
+          />
+          <ButtonCreate
+            title="Avançar"
+            alignItems="center"
+            justifyContent="center"
+            w="47%"
+            h={12}
+            mt={2}
+            isLoading={isLoading}
+            variant="primary"
+            onPress={handleSubmit(handleGoPreview)}
+          />
+        </HStack>
+      </Box>
     </>
-  );
-};
+  )
+}
 
 // Procurando solução
 LogBox.ignoreLogs([
-  "We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320",
-]);
+  'We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320',
+])

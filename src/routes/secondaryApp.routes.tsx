@@ -1,36 +1,34 @@
-import { Platform } from "react-native";
-import { useTheme } from "native-base";
+import { Platform } from 'react-native'
+import { useTheme } from 'native-base'
 import {
   createBottomTabNavigator,
   BottomTabNavigationProp,
-} from "@react-navigation/bottom-tabs";
+} from '@react-navigation/bottom-tabs'
 
-import { Home } from "@screens/Home";
-import { MyAds } from "@screens/MyAds";
+import { Home } from '@screens/Home'
+import { MyAds } from '@screens/MyAds'
+import { SignIn } from '@screens/SignIn'
 
-import HomeSvg from "@assets/home.svg";
-import AdsSvg from "@assets/ads.svg";
-import GetOutSvg from "@assets/getout.svg";
+import HomeSvg from '@assets/home.svg'
+import AdsSvg from '@assets/ads.svg'
+import GetOutSvg from '@assets/getout.svg'
 
-import { useAuth } from "@hooks/useAuth";
-import { Loading } from "@components/Loading";
-import { useEffect } from "react";
+type SecondaryAppRoutesProps = {
+  home: undefined
+  myads: undefined
+  getout: undefined
+}
 
-type SecondaryAppRoutes = {
-  home: undefined;
-  myads: undefined;
-  getout: undefined;
-};
-
-const { Navigator, Screen } = createBottomTabNavigator<SecondaryAppRoutes>();
+const { Navigator, Screen } =
+  createBottomTabNavigator<SecondaryAppRoutesProps>()
 
 export type SecondaryAppNavigatorRoutesProps =
-  BottomTabNavigationProp<SecondaryAppRoutes>;
+  BottomTabNavigationProp<SecondaryAppRoutesProps>
 
 export const SecondaryAppRoutes = () => {
-  const { sizes, colors } = useTheme();
+  const { sizes, colors } = useTheme()
 
-  const iconSize = sizes[6];
+  const iconSize = sizes[6]
 
   return (
     <Navigator
@@ -42,7 +40,7 @@ export const SecondaryAppRoutes = () => {
         tabBarStyle: {
           backgroundColor: colors.white,
           borderTopWidth: 0,
-          height: Platform.OS === "android" ? "auto" : 96,
+          height: Platform.OS === 'android' ? 'auto' : 96,
           paddingBottom: sizes[10],
           paddingTop: sizes[6],
         },
@@ -73,18 +71,7 @@ export const SecondaryAppRoutes = () => {
       />
       <Screen
         name="getout"
-        component={() => {
-          const { signOut } = useAuth();
-          useEffect(() => {
-            const getOut = async () => {
-              await signOut();
-            };
-
-            getOut();
-          }, []);
-
-          return <Loading />;
-        }}
+        component={SignIn}
         options={{
           tabBarIcon: ({ color }) => (
             <GetOutSvg fill={color} width={iconSize} height={iconSize} />
@@ -92,5 +79,5 @@ export const SecondaryAppRoutes = () => {
         }}
       />
     </Navigator>
-  );
-};
+  )
+}

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from 'react'
 import {
   HStack,
   VStack,
@@ -14,64 +14,66 @@ import {
   useToast,
   FlatList,
   Center,
-} from "native-base";
-import { TouchableOpacity } from "react-native";
+  Box,
+} from 'native-base'
+import { TouchableOpacity } from 'react-native'
 
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm } from 'react-hook-form'
 
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
 
-import { api } from "@services/api";
+import { api } from '@services/api'
 
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import { AppNavigatorRoutesProps } from "@routes/app.routes";
+import { useNavigation, useFocusEffect } from '@react-navigation/native'
+import { AppNavigatorRoutesProps } from '@routes/app.routes'
 
-import { Button } from "@components/Button";
-import { AdCard } from "@components/AdCard";
+import { Button } from '@components/Button'
+import { AdCard } from '@components/AdCard'
 
-import { useAuth } from "@hooks/useAuth";
+import { useAuth } from '@hooks/useAuth'
 
-import { ProductDTO } from "@dtos/ProductDTO";
+import { ProductDTO } from '@dtos/ProductDTO'
 
 import {
   Plus,
-  BookmarkSimple,
   ArrowRight,
   MagnifyingGlass,
   Sliders,
-} from "phosphor-react-native";
-import { AppError } from "@utils/AppError";
-import { Loading } from "@components/Loading";
+  Tag,
+} from 'phosphor-react-native'
+import { AppError } from '@utils/AppError'
+import { Loading } from '@components/Loading'
+import { ButtonCreate } from '@components/ButtonCreate'
 
 type FormDataProps = {
-  search: string;
-};
+  search: string
+}
 
 const signInSchema = yup.object({
   search: yup.string(),
-});
+})
 
 export const Home = () => {
-  const [showFiltersModal, setShowFiltersModal] = useState<boolean>(false);
-  const [isNew, setIsNew] = useState(true);
+  const [showFiltersModal, setShowFiltersModal] = useState<boolean>(false)
+  const [isNew, setIsNew] = useState(true)
   const [paymentMethods, setPaymentMethods] = useState<string[]>([
-    "pix",
-    "boleto",
-    "cash",
-    "deposit",
-    "card",
-  ]);
-  const [isLoadingSecondary, setIsLoadingSecondary] = useState(false);
-  const [acceptTrade, setAcceptTrade] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [numberOfAds, setNumberOfAds] = useState(0);
-  const [products, setProducts] = useState<ProductDTO[]>([]);
+    'pix',
+    'boleto',
+    'cash',
+    'deposit',
+    'card',
+  ])
+  const [isLoadingSecondary, setIsLoadingSecondary] = useState(false)
+  const [acceptTrade, setAcceptTrade] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [numberOfAds, setNumberOfAds] = useState(0)
+  const [products, setProducts] = useState<ProductDTO[]>([])
 
-  const navigation = useNavigation<AppNavigatorRoutesProps>();
+  const navigation = useNavigation<AppNavigatorRoutesProps>()
 
-  const { user } = useAuth();
-  const toast = useToast();
+  const { user } = useAuth()
+  const toast = useToast()
 
   const {
     control,
@@ -79,91 +81,91 @@ export const Home = () => {
     formState: { errors },
   } = useForm<FormDataProps>({
     defaultValues: {
-      search: "",
+      search: '',
     },
     resolver: yupResolver(signInSchema),
-  });
+  })
 
   const handleCreateAd = () => {
-    navigation.navigate("createad");
-  };
+    navigation.navigate('createad')
+  }
 
   const handleSeeMyAds = () => {
-    navigation.navigate("app", { screen: "myads" });
-  };
+    navigation.navigate('app', { screen: 'myads' })
+  }
 
   const handleApplyFilters = async ({ search }: FormDataProps) => {
-    setShowFiltersModal(false);
+    setShowFiltersModal(false)
 
     try {
-      let paymentMethodsQuery = "";
+      let paymentMethodsQuery = ''
 
       paymentMethods.forEach((item) => {
-        paymentMethodsQuery = paymentMethodsQuery + `&payment_methods=${item}`;
-      });
+        paymentMethodsQuery = paymentMethodsQuery + `&payment_methods=${item}`
+      })
 
-      setIsLoadingSecondary(true);
+      setIsLoadingSecondary(true)
       const productsData = await api.get(
         `/products/?is_new=${isNew}&accept_trade=${acceptTrade}${paymentMethodsQuery}${
           search.length > 0 && `&query=${search}`
-        }`
-      );
+        }`,
+      )
 
-      setProducts(productsData.data);
+      setProducts(productsData.data)
     } catch (error) {
-      const isAppError = error instanceof AppError;
+      const isAppError = error instanceof AppError
       const title = isAppError
         ? error.message
-        : "Não foi possível receber os produtos. Tente Novamente!";
+        : 'Não foi possível receber os produtos. Tente Novamente!'
 
       if (isAppError) {
         toast.show({
           title,
-          placement: "top",
-          bgColor: "red.500",
-        });
+          placement: 'top',
+          bgColor: 'red.500',
+        })
       }
     } finally {
-      setIsLoadingSecondary(false);
+      setIsLoadingSecondary(false)
     }
-  };
+  }
 
   const handleResetFilters = () => {
-    setIsNew(true);
-    setAcceptTrade(false);
-    setPaymentMethods(["pix", "boleto", "cash", "deposit", "card"]);
-  };
+    setIsNew(true)
+    setAcceptTrade(false)
+    setPaymentMethods(['pix', 'boleto', 'cash', 'deposit', 'card'])
+  }
 
   useFocusEffect(
     useCallback(() => {
       const loadData = async () => {
         try {
-          const productsData = await api.get(`/users/products`);
-          const generalProductsData = await api.get("/products");
+          const productsData = await api.get(`/users/products`)
+          const generalProductsData = await api.get('/products')
 
-          setProducts(generalProductsData.data);
-          setNumberOfAds(productsData.data.length);
+          setProducts(generalProductsData.data)
+          setNumberOfAds(productsData.data.length)
         } catch (error) {
-          const isAppError = error instanceof AppError;
+          const isAppError = error instanceof AppError
           const title = isAppError
             ? error.message
-            : "Não foi possível receber os produtos. Tente Novamente!";
+            : 'Não foi possível receber os produtos. Tente Novamente!'
 
           if (isAppError) {
             toast.show({
               title,
-              placement: "top",
-              bgColor: "red.500",
-            });
+              placement: 'top',
+              bgColor: 'red.500',
+            })
           }
         } finally {
-          setIsLoading(false);
+          setIsLoading(false)
         }
-      };
+      }
 
-      loadData();
-    }, [])
-  );
+      loadData()
+    }, []),
+  )
 
   return (
     <>
@@ -185,17 +187,17 @@ export const Home = () => {
             />
 
             <VStack ml="3">
-              <Text color="gray.300" fontSize={16}>
+              <Text color="gray.100" fontSize={16}>
                 Boas Vindas,
               </Text>
-              <Heading color="gray.200" fontSize={18}>
-                {user.name[0].toUpperCase() + user.name.substring(1)}
+              <Heading color="gray.100" fontSize={16} fontFamily="heading">
+                {`${user.name[0].toUpperCase() + user.name.substring(1)}!`}
               </Heading>
             </VStack>
 
-            <Button
-              title="Novo Anúncio"
-              icon={<Plus color="white" />}
+            <ButtonCreate
+              title="Criar anúncio"
+              icon={<Plus color="white" size={20} />}
               variant="secondary"
               width="40"
               h="12"
@@ -205,7 +207,7 @@ export const Home = () => {
             />
           </HStack>
 
-          <Text color="gray.300" fontSize={16} mt="7">
+          <Text color="gray.300" fontSize={14} mt="7">
             Seus produtos anunciados para venda
           </Text>
 
@@ -213,33 +215,43 @@ export const Home = () => {
             <HStack
               alignItems="center"
               w="full"
-              bg="gray.500"
               h="20"
+              bg="#d3daf199"
               p="5"
               borderRadius="8"
               mt="2"
             >
-              <BookmarkSimple color="#647AC7" weight="bold" size={28} />
+              <Tag color="#364D9D" weight="regular" size={28} />
 
               <VStack ml="5">
-                <Heading color="gray.200" fontSize="xl">
+                <Heading
+                  color="gray.200"
+                  fontSize="xl"
+                  fontFamily="heading"
+                  mb={2}
+                >
                   {numberOfAds}
                 </Heading>
-                <Text color="gray.300" fontSize={16} mt={-2}>
+                <Text color="gray.200" fontSize={12} mt={-2}>
                   anúncios ativos
                 </Text>
               </VStack>
 
               <HStack position="absolute" right={5}>
-                <Heading color="#647AC7" mr="2" fontSize={14}>
+                <Heading
+                  color="#364D9D"
+                  mr="2"
+                  fontSize={14}
+                  fontFamily="heading"
+                >
                   Meus anúncios
                 </Heading>
-                <ArrowRight color="#647AC7" size="20" weight="bold" />
+                <ArrowRight color="#364D9D" size="20" weight="regular" />
               </HStack>
             </HStack>
           </TouchableOpacity>
 
-          <Text color="gray.300" fontSize={16} mt="7">
+          <Text color="gray.300" fontSize={14} mt="7">
             Compre produtos variados
           </Text>
 
@@ -255,7 +267,7 @@ export const Home = () => {
             <Controller
               control={control}
               name="search"
-              rules={{ required: "Informe o e-mail" }}
+              rules={{ required: 'Informe o nome do produto' }}
               render={({ field: { onChange, value } }) => (
                 <>
                   <Input
@@ -274,7 +286,7 @@ export const Home = () => {
                     value={value}
                     flex={1}
                     _focus={{
-                      bg: "white",
+                      bg: 'white',
                     }}
                   />
                   {errors.search?.message && (
@@ -295,7 +307,7 @@ export const Home = () => {
               onPress={handleSubmit(handleApplyFilters)}
               bg="white"
               _pressed={{
-                bg: "gray.500",
+                bg: 'gray.500',
               }}
             >
               <MagnifyingGlass weight="bold" color="#5F5B62" />
@@ -304,7 +316,7 @@ export const Home = () => {
               onPress={() => setShowFiltersModal(true)}
               bg="white"
               _pressed={{
-                bg: "gray.500",
+                bg: 'gray.500',
               }}
             >
               <Sliders weight="bold" color="#5F5B62" />
@@ -318,13 +330,13 @@ export const Home = () => {
           ) : (
             <FlatList
               flex={1}
-              columnWrapperStyle={{ justifyContent: "space-between" }}
+              columnWrapperStyle={{ justifyContent: 'space-between' }}
               numColumns={2}
               data={products}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <AdCard
-                  width="40"
+                  width={165}
                   title={item.name}
                   image={`${api.defaults.baseURL}/images/${item.product_images[0].path}`}
                   active={item.is_active}
@@ -360,23 +372,39 @@ export const Home = () => {
         size="xl"
       >
         <Modal.Content marginBottom="5" marginTop="auto">
-          <Modal.CloseButton />
-          <Modal.Header>
-            <Heading color="gray.200" fontSize={20}>
-              Filtrar Anúncios
-            </Heading>
-          </Modal.Header>
+          <Box
+            w={20}
+            h={1}
+            bg="gray.500"
+            position="relative"
+            left={135}
+            mt={3}
+            borderRadius={999}
+          />
 
-          <Modal.Body alignItems="flex-start" mb="5">
-            <Heading color="gray.200" fontSize={16} my={2}>
+          <Box p={4} mt={3}>
+            <Heading color="gray.200" fontSize={20} fontFamily="heading">
+              Filtrar anúncios
+            </Heading>
+            <Modal.CloseButton />
+          </Box>
+
+          <Modal.Body alignItems="flex-start">
+            <Heading
+              color="gray.200"
+              fontSize={16}
+              my={2}
+              mt={-2}
+              fontFamily="heading"
+            >
               Condição
             </Heading>
 
             <Radio.Group
               name="productCondition"
-              value={isNew ? "new" : "used"}
+              value={isNew ? 'new' : 'used'}
               onChange={(nextValue) => {
-                setIsNew(nextValue === "new" ? true : false);
+                setIsNew(nextValue === 'new')
               }}
             >
               <HStack>
@@ -393,7 +421,7 @@ export const Home = () => {
               </HStack>
             </Radio.Group>
 
-            <Heading color="gray.200" fontSize={16} my={2}>
+            <Heading color="gray.200" fontSize={16} my={2} fontFamily="heading">
               Aceita troca?
             </Heading>
 
@@ -401,30 +429,34 @@ export const Home = () => {
               onToggle={(value) => setAcceptTrade(value)}
               value={acceptTrade}
               size="lg"
-              m={0}
+              m={2}
             />
 
-            <Heading color="gray.200" fontSize={16} my={2}>
+            <Heading color="gray.200" fontSize={16} my={2} fontFamily="heading">
               Meios de pagamento
             </Heading>
 
-            <Checkbox.Group onChange={setPaymentMethods} value={paymentMethods}>
-              <Checkbox value="boleto">
+            <Checkbox.Group
+              onChange={setPaymentMethods}
+              value={paymentMethods}
+              m={1}
+            >
+              <Checkbox value="boleto" mb={1}>
                 <Text color="gray.300" fontSize={16}>
                   Boleto
                 </Text>
               </Checkbox>
-              <Checkbox value="pix">
+              <Checkbox value="pix" mb={1}>
                 <Text color="gray.300" fontSize={16}>
                   Pix
                 </Text>
               </Checkbox>
-              <Checkbox value="cash">
+              <Checkbox value="cash" mb={1}>
                 <Text color="gray.300" fontSize={16}>
                   Dinheiro
                 </Text>
               </Checkbox>
-              <Checkbox value="card">
+              <Checkbox value="card" mb={1}>
                 <Text color="gray.300" fontSize={16}>
                   Cartão de Crédito
                 </Text>
@@ -437,36 +469,34 @@ export const Home = () => {
             </Checkbox.Group>
           </Modal.Body>
 
-          <Modal.Footer>
-            <HStack
-              w="full"
-              py={2}
-              px={5}
-              bg="white"
+          <HStack
+            w="full"
+            py={2}
+            px={5}
+            mb={5}
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Button
+              variant="secondary"
+              title="Resetar Filtros"
               alignItems="center"
-              justifyContent="space-between"
-            >
-              <Button
-                variant="secondary"
-                title="Resetar Filtros"
-                alignItems="center"
-                justifyContent="center"
-                w="47%"
-                h={12}
-                onPress={handleResetFilters}
-              />
-              <Button
-                title="Aplicar Filtros"
-                alignItems="center"
-                justifyContent="center"
-                w="47%"
-                h={12}
-                onPress={handleSubmit(handleApplyFilters)}
-              />
-            </HStack>
-          </Modal.Footer>
+              justifyContent="center"
+              w="48%"
+              h={12}
+              onPress={handleResetFilters}
+            />
+            <ButtonCreate
+              title="Aplicar Filtros"
+              alignItems="center"
+              justifyContent="center"
+              w="48%"
+              h={12}
+              onPress={handleSubmit(handleApplyFilters)}
+            />
+          </HStack>
         </Modal.Content>
       </Modal>
     </>
-  );
-};
+  )
+}

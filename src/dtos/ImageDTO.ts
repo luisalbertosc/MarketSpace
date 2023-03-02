@@ -1,4 +1,4 @@
 export type ImageDTO = {
-  path: string;
-  id: string;
-};
+  path: string
+  id: string
+}

@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState } from 'react'
 
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity } from 'react-native'
 
 import {
   ScrollView,
@@ -10,71 +10,72 @@ import {
   Image,
   Center,
   useToast,
-} from "native-base";
+} from 'native-base'
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller } from 'react-hook-form'
 
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
 
-import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system";
+import * as ImagePicker from 'expo-image-picker'
+import * as FileSystem from 'expo-file-system'
 
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation } from '@react-navigation/native'
 
-import { Input } from "@components/Input";
-import { Button } from "@components/Button";
+import { Input } from '@components/Input'
+import { Button } from '@components/Button'
 
-import Logo from "@assets/logo_05x.png";
-import Profile from "@assets/profile.png";
+import Logo from '@assets/logo_05x.png'
+import Profile from '@assets/profile.png'
 
-import { AppError } from "@utils/AppError";
-import { api } from "@services/api";
+import { AppError } from '@utils/AppError'
+import { api } from '@services/api'
 
-import { useAuth } from "@hooks/useAuth";
+import { useAuth } from '@hooks/useAuth'
+import { ButtonCreate } from '@components/ButtonCreate'
 
 type userImageSelectedProps = {
-  selected: boolean;
+  selected: boolean
   photo: {
-    uri: string;
-    name: string;
-    type: string;
-  };
-};
+    uri: string
+    name: string
+    type: string
+  }
+}
 
 type FormDataProps = {
-  name: string;
-  email: string;
-  phoneNumber: string;
-  password: string;
-  password_confirm: string;
-};
+  name: string
+  email: string
+  phoneNumber: string
+  password: string
+  password_confirm: string
+}
 
 const signUpSchema = yup.object({
-  name: yup.string().required("Informe o nome."),
-  phoneNumber: yup.string().required("Informe seu número."),
-  email: yup.string().required("Informe o e-mail.").email("E-mail inválido."),
+  name: yup.string().required('Informe o nome.'),
+  phoneNumber: yup.string().required('Informe seu número.'),
+  email: yup.string().required('Informe o e-mail.').email('E-mail inválido.'),
   password: yup
     .string()
-    .required("Informe a senha")
-    .min(6, "A senha deve ter pelo menos 6 dígitos."),
+    .required('Informe a senha')
+    .min(6, 'A senha deve ter pelo menos 6 dígitos.'),
   password_confirm: yup
     .string()
-    .required("Confirme a senha.")
-    .oneOf([yup.ref("password"), null], "A confirmação da senha não confere."),
-});
+    .required('Confirme a senha.')
+    .oneOf([yup.ref('password'), null], 'A confirmação da senha não confere.'),
+})
 
 export const SignUp = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
   const [userImageSelected, setUserImageSelected] = useState({
     selected: false,
-  } as userImageSelectedProps);
+  } as userImageSelectedProps)
 
-  const navigation = useNavigation();
+  const navigation = useNavigation()
 
-  const toast = useToast();
+  const toast = useToast()
 
-  const { singIn } = useAuth();
+  const { singIn } = useAuth()
 
   const {
     control,
@@ -83,16 +84,16 @@ export const SignUp = () => {
     formState: { errors },
   } = useForm<FormDataProps>({
     defaultValues: {
-      name: "",
-      email: "",
-      phoneNumber: "",
-      password: "",
-      password_confirm: "",
+      name: '',
+      email: '',
+      phoneNumber: '',
+      password: '',
+      password_confirm: '',
     },
     resolver: yupResolver(signUpSchema),
-  });
+  })
 
-  const userForm = new FormData();
+  const userForm = new FormData()
 
   const handleUserPhotoSelect = async () => {
     try {
@@ -101,58 +102,58 @@ export const SignUp = () => {
         quality: 1,
         aspect: [4, 4],
         allowsEditing: true,
-      });
+      })
 
       if (photoSelected.canceled) {
-        return;
+        return
       }
 
       if (photoSelected.assets[0].uri) {
         const photoInfo = await FileSystem.getInfoAsync(
-          photoSelected.assets[0].uri
-        );
+          photoSelected.assets[0].uri,
+        )
 
         if (photoInfo.size && photoInfo.size / 1024 / 1024 > 5) {
           return toast.show({
-            title: "Essa imagem é muito grande. Escolha uma de até 5MB.",
-            placement: "top",
-            bgColor: "red.500",
-          });
+            title: 'Essa imagem é muito grande. Escolha uma de até 5MB.',
+            placement: 'top',
+            bgColor: 'red.500',
+          })
         }
 
-        const fileExtension = photoSelected.assets[0].uri.split(".").pop();
+        const fileExtension = photoSelected.assets[0].uri.split('.').pop()
 
         const photoFile = {
           name: `${fileExtension}`.toLowerCase(),
           uri: photoSelected.assets[0].uri,
           type: `${photoSelected.assets[0].type}/${fileExtension}`,
-        } as any;
+        } as any
 
         setUserImageSelected({
           selected: true,
           photo: { ...photoFile },
-        });
+        })
 
         toast.show({
-          title: "Foto selecionada!",
-          placement: "top",
-          bgColor: "green.500",
-        });
+          title: 'Foto selecionada!',
+          placement: 'top',
+          bgColor: 'green.500',
+        })
       }
     } catch (error) {
       toast.show({
-        title: "Erro! Tente novamente mais tarde!",
-        placement: "top",
-        bgColor: "red.500",
-      });
+        title: 'Erro! Tente novamente mais tarde!',
+        placement: 'top',
+        bgColor: 'red.500',
+      })
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   const handleGoBack = () => {
-    navigation.goBack();
-  };
+    navigation.goBack()
+  }
 
   const handleSignUp = async ({
     name,
@@ -163,51 +164,51 @@ export const SignUp = () => {
     try {
       if (!userImageSelected.selected) {
         return toast.show({
-          title: "Por favor selecione uma imagem!",
-          placement: "top",
-          bgColor: "red.500",
-        });
+          title: 'Por favor selecione uma imagem!',
+          placement: 'top',
+          bgColor: 'red.500',
+        })
       }
 
-      const { name } = getValues();
+      const { name } = getValues()
 
       const userImage = {
         ...userImageSelected.photo,
         name: `${name}.${userImageSelected.photo.name}`.toLowerCase(),
-      };
+      } as any
 
-      userForm.append("avatar", userImage);
-      userForm.append("name", name.toLowerCase());
-      userForm.append("email", email.toLowerCase());
-      userForm.append("tel", phoneNumber);
-      userForm.append("password", password);
+      userForm.append('avatar', userImage)
+      userForm.append('name', name.toLowerCase())
+      userForm.append('email', email.toLowerCase())
+      userForm.append('tel', phoneNumber)
+      userForm.append('password', password)
 
-      setIsLoading(true);
+      setIsLoading(true)
 
-      await api.post("/users", userForm, {
+      await api.post('/users', userForm, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
-      });
+      })
 
-      await singIn(email, password);
+      await singIn(email, password)
     } catch (error) {
-      const isAppError = error instanceof AppError;
+      const isAppError = error instanceof AppError
       const title = isAppError
         ? error.message
-        : "Não foi possível criar a conta. Tente novamente mais tarde.";
+        : 'Não foi possível criar a conta. Tente novamente mais tarde.'
 
       if (isAppError) {
         toast.show({
           title,
-          placement: "top",
-          bgColor: "red.500",
-        });
+          placement: 'top',
+          bgColor: 'red.500',
+        })
       }
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <ScrollView
@@ -217,10 +218,10 @@ export const SignUp = () => {
       <Center flex={1}>
         <VStack alignItems="center" width="full" p={5}>
           <Image source={Logo} alt="Logo" mt={8} />
-          <Heading color="gray.200" fontFamily="heading">
+          <Heading color="gray.100" fontFamily="heading" mb={2}>
             Boas Vindas!
           </Heading>
-          <Text color="gray.400" textAlign="center" mb={5}>
+          <Text color="gray.200" textAlign="center" mb={5} lineHeight="sm">
             Crie sua conta e use o espaço para comprar itens variados e vender
             seus produtos
           </Text>
@@ -320,23 +321,23 @@ export const SignUp = () => {
             )}
           />
 
-          <Button
+          <ButtonCreate
+            mt={2}
+            mb={3}
             title="Criar"
             onPress={handleSubmit(handleSignUp)}
             isLoading={isLoading}
           />
 
-          <Text color="gray.300" mt={10}>
-            Já tem uma conta?
-          </Text>
+          <Text color="gray.300">Já tem uma conta?</Text>
           <Button
             title="Ir para o login"
             variant="secondary"
-            mt={2}
+            mt={1}
             onPress={handleGoBack}
           />
         </VStack>
       </Center>
     </ScrollView>
-  );
-};
+  )
+}
