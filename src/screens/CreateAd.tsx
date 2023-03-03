@@ -154,11 +154,11 @@ export const CreateAd = () => {
           return [...images, photoFile]
         })
 
-        toast.show({
-          title: 'Foto selecionada!',
-          placement: 'top',
-          bgColor: 'green.500',
-        })
+        // toast.show({
+        //   title: 'Foto selecionada!',
+        //   placement: 'top',
+        //   bgColor: 'green.500',
+        // })
       }
     } catch (error) {
       const isAppError = error instanceof AppError

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import {
   HStack,
   VStack,
@@ -67,7 +67,7 @@ export const Home = () => {
   const [isLoadingSecondary, setIsLoadingSecondary] = useState(false)
   const [acceptTrade, setAcceptTrade] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [numberOfAds, setNumberOfAds] = useState(0)
+  const [numberOfAdsActive, setNumberOfAdsActive] = useState(0)
   const [products, setProducts] = useState<ProductDTO[]>([])
 
   const navigation = useNavigation<AppNavigatorRoutesProps>()
@@ -143,8 +143,12 @@ export const Home = () => {
           const productsData = await api.get(`/users/products`)
           const generalProductsData = await api.get('/products')
 
+          const productsActive = productsData.data.filter(
+            (product: any) => product.is_active === true,
+          )
+
           setProducts(generalProductsData.data)
-          setNumberOfAds(productsData.data.length)
+          setNumberOfAdsActive(productsActive.length)
         } catch (error) {
           const isAppError = error instanceof AppError
           const title = isAppError
@@ -230,7 +234,7 @@ export const Home = () => {
                   fontFamily="heading"
                   mb={2}
                 >
-                  {numberOfAds}
+                  {numberOfAdsActive}
                 </Heading>
                 <Text color="gray.200" fontSize={12} mt={-2}>
                   anúncios ativos

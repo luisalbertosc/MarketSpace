@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { useState, useEffect } from 'react'
-import { Dimensions, StatusBar } from 'react-native'
+import { Alert, Dimensions, StatusBar } from 'react-native'
 
 import {
   ScrollView,
@@ -117,8 +117,18 @@ export const MyAd = () => {
           bgColor: 'red.500',
         })
       }
+    } finally {
+      setIsDeletingLoading(false)
     }
   }
+
+  const handleButtonRemoveAd = () => {
+    Alert.alert('Excluir', 'Deseja excluir o anúncio?', [
+      { text: 'Não', style: 'cancel' },
+      { text: 'Sim', onPress: () => handleDeleteAd() },
+    ])
+  }
+
   const handleGoBack = () => {
     navigation.navigate('app', { screen: 'myads' })
   }
@@ -321,7 +331,7 @@ export const MyAd = () => {
                 title="Excluir Anúncio"
                 variant="secondary"
                 icon={<Trash size={22} color="gray" />}
-                onPress={handleDeleteAd}
+                onPress={handleButtonRemoveAd}
                 isLoading={isDeletingLoading}
               />
             </VStack>
